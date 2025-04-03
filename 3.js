@@ -208,18 +208,32 @@ if(contactForm) {
     }
     
     if(isValid) {
-      // Show success message
-      contactForm.style.display = 'none';
-      formSuccess.style.display = 'block';
-      
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        contactForm.reset();
-        contactForm.style.display = 'block';
-        formSuccess.style.display = 'none';
-        contactModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-      }, 3000);
+      // ✅ Send data to Formspree
+      fetch(contactForm.action, {
+        method: 'POST',
+        body: new FormData(contactForm),
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(response => {
+        if(response.ok) {
+          // Show success UI
+          contactForm.style.display = 'none';
+          formSuccess.style.display = 'block';
+          
+          setTimeout(() => {
+            contactForm.reset();
+            contactForm.style.display = 'block';
+            formSuccess.style.display = 'none';
+            contactModal.style.display = 'none';
+          }, 3000);
+        } else {
+          alert('Failed to send. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Network error. Check console.');
+      });
     }
   });
 }
